@@ -12,7 +12,10 @@ module Que
       # Very old migrations may use Que.create! and Que.drop!, which just
       # created and dropped the initial version of the jobs table.
       def create!; migrate!(version: 1); end
-      def drop!;   migrate!(version: 0); end
+      def drop!
+        migrate!(version: 7) if Que.db_version >= 8
+        migrate!(version: 0)
+      end
     end
   end
 end

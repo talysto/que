@@ -12,18 +12,18 @@ module Que
     SQL[:insert_job] =
       %{
         INSERT INTO public.que_jobs
-        (queue, priority, run_at, first_run_at, job_class, args, kwargs, data, job_schema_version)
+        (queue, priority, run_at, job_class, args, kwargs, data, job_schema_version, first_run_at)
         VALUES
         (
           coalesce($1, 'default')::text,
           coalesce($2, 100)::smallint,
           coalesce($3, now())::timestamptz,
-          coalesce($3, now())::timestamptz,
           $4::text,
           coalesce($5, '[]')::jsonb,
           coalesce($6, '{}')::jsonb,
           coalesce($7, '{}')::jsonb,
-          #{Que.job_schema_version}
+          #{Que.job_schema_version},
+          coalesce($3, now())::timestamptz
         )
         RETURNING *
       }
@@ -34,17 +34,17 @@ module Que
           SELECT * from json_to_recordset(coalesce($5, '[{args:{},kwargs:{}}]')::json) as x(args jsonb, kwargs jsonb)
         )
         INSERT INTO public.que_jobs
-        (queue, priority, run_at, first_run_at, job_class, args, kwargs, data, job_schema_version)
+        (queue, priority, run_at, job_class, args, kwargs, data, job_schema_version, first_run_at)
         SELECT
           coalesce($1, 'default')::text,
           coalesce($2, 100)::smallint,
-          coalesce($3, now())::timestamptz,
           coalesce($3, now())::timestamptz,
           $4::text,
           args_and_kwargs.args,
           args_and_kwargs.kwargs,
           coalesce($6, '{}')::jsonb,
-          #{Que.job_schema_version}
+          #{Que.job_schema_version},
+          coalesce($3, now())::timestamptz
         FROM args_and_kwargs
         RETURNING *
       }
