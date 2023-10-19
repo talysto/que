@@ -1,5 +1,22 @@
+-- Add 'first_run_at' column to 'que_jobs'. The 'first_run_at' column will store the timestamp with time zone (timestamptz) 
+-- of the initial scheduled execution time for que jobs. The column default is set to now, but realistically this will always 
+-- be defaulted to the initial run_at value. This enhancement helps re-trace the execution of the job when reviewing failures.
+
 ALTER TABLE que_jobs
   ADD COLUMN first_run_at timestamptz NOT NULL DEFAULT now();
+
+
+-- This view extends the functionality of the que job management system by providing an enriched view of que jobs. 
+-- It combines data from the 'que_jobs' table and the 'pg_locks' table to present a comprehensive overview of que jobs, 
+-- including their status, associated information, and locking details. The view is designed to facilitate the monitoring
+--  and management of que jobs, allowing you to track job statuses, locking details, and job-related information.
+
+-- Columns:
+-- - lock_id: Unique identifier for the lock associated with the job.
+-- - que_locker_pid: Process ID (PID) of the que job locker.
+-- - sub_class: The job class extracted from the job arguments.
+-- - updated_at: The most recent timestamp among 'run_at,' 'expired_at,' and 'finished_at.'
+-- - status: The status of the job, which can be 'running,' 'completed,' 'failed,' 'errored,' 'queued,' or 'scheduled.'
 
 CREATE OR REPLACE VIEW public.que_jobs_ext
 AS
