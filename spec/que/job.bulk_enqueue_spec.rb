@@ -41,6 +41,7 @@ describe Que::Job, '.bulk_enqueue' do
       assert_equal expected_queue, job[:queue]
       assert_equal expected_priority, job[:priority]
       assert_in_delta job[:run_at], expected_run_at, QueSpec::TIME_SKEW
+      assert_equal job[:run_at], job[:first_run_at]
       assert_equal expected_job_class.to_s, job[:job_class]
       assert_equal expected_args[i], job[:args]
       assert_equal expected_kwargs[i], job[:kwargs]
