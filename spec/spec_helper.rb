@@ -235,6 +235,10 @@ class QueSpec < Minitest::Spec
     jobs_dataset.where(finished_at: nil, expired_at: nil)
   end
 
+  def errored_jobs_dataset 
+    jobs_dataset.exclude(error_count: 0)
+  end
+
   def expired_jobs_dataset
     jobs_dataset.exclude(expired_at: nil)
   end
@@ -271,16 +275,16 @@ class QueSpec < Minitest::Spec
     messages
   end
 
-  def pg_locks
+  def pg_advisory_locks
     DB[:pg_locks].where(locktype: 'advisory')
   end
 
   def locked_ids
-    pg_locks.select_order_map(Sequel.lit("(classid::bigint << 32) + objid::bigint"))
+    pg_advisory_locks.select_order_map(Sequel.lit("(classid::bigint << 32) + objid::bigint"))
   end
 
   def locked_pids
-    pg_locks.select_order_map(Sequel.lit("pid"))
+    pg_advisory_locks.select_order_map(:pid)
   end
 
   def current_spec_location

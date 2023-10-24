@@ -56,7 +56,7 @@
 - [Enqueueing jobs in bulk](#enqueueing-jobs-in-bulk)
 - [Expired jobs](#expired-jobs)
 - [Finished jobs](#finished-jobs)
-- [Que Jobs Ext View](#que-jobs-ext-view)
+- [Que Jobs Ext view](#que-jobs-ext-view)
 
 <!-- /MarkdownTOC -->
 
@@ -881,12 +881,14 @@ DELETE FROM que_jobs WHERE finished_at < (select now() - interval '7 days');
 COMMIT;
 ```
 
-## Que Jobs Ext View
+## Que Jobs Ext view
+
 This view extends the functionality of the que job management system by providing an enriched view of que jobs. It combines data from the 'que_jobs' table and the 'pg_locks' table to present a comprehensive overview of que jobs, including their status, associated information, and locking details.
 
 This view is designed to facilitate the monitoring and management of que jobs, allowing you to track job statuses, locking details, and job-related information.
 
 Additional Columns:
+
 - lock_id: Unique identifier for the lock associated with the job.
 - que_locker_pid: Process ID (PID) of the que job locker.
 - sub_class: The job class extracted from the job arguments.
