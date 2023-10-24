@@ -66,8 +66,7 @@ describe Que::Utils::Introspection do
 
       state = states.first
       expected_keys = %i(priority run_at id job_class error_count last_error_message queue
-      last_error_backtrace finished_at expired_at args data job_schema_version kwargs ruby_hostname ruby_pid)
-      expected_keys << :first_run_at if Que.db_version >= 8
+      last_error_backtrace finished_at expired_at args data job_schema_version kwargs ruby_hostname ruby_pid first_run_at)
 
       assert_equal expected_keys.sort, state.keys.sort
 
